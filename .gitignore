@@ -1,0 +1,42 @@
+# Node.js
+node_modules/
+jspm_packages/
+web_modules/
+*.tsbuildinfo
+.npm/
+.eslintcache/
+.stylelintcache/
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+.node_repl_history
+*.tgz
+.yarn-integrity
+
+# Express.js
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+
+# Build artifacts
+public/
+build/
+dist/
+.cache/
+.docusaurus/
+.serverless/
+.fusebox/
+.dynamodb/
+.tern-port/
+.vscode-test/
+.yarn/
+.svelte-kit/
+.webpack/
+
+# Other
+.DS_Store
+README.md
+LICENSE
