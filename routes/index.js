@@ -7,11 +7,36 @@ var express = require('express');
 var wavefile = require('wavefile');
 var fs = require('fs');
 var { join } = require('path');
+const multer = require('multer');
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, './uploads/')
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + '-' + file.originalname)
+  }
+})
 
+const upload = multer({ storage: storage })
 var router = express.Router();
 
 /* GET home page. */
-router.get('/', async function(req, res, next) {
+router.get('/', async function (req, res, next) {
+  res.render('index', { title: 'Express' });
+
+});
+
+router.post('/transcribe', upload.single('file'), async (req, res) => {
+  const file = req.file;
+  if (!file) {
+    res.status(400).json({ error: 'Invalid file type.' });
+    return;
+  }
+
+  // Save the uploaded file to the server.
+  // await file.mv('./uploads/' + file.name);
+
+
   const TransformersApi = Function('return import("@xenova/transformers")')();
   const { pipeline } = await TransformersApi;
   // Load model
@@ -21,10 +46,10 @@ router.get('/', async function(req, res, next) {
   // let url = 'https://huggingface.co/datasets/Xenova/transformers.js-docs/resolve/main/jfk.wav';
   // let buffer = Buffer.from(await fetch(url).then(x => x.arrayBuffer()))
 
-  let url = './Recording(9).wav'
-  const filePath = join(process.cwd(), url);
+  // let url = './Recording(9).wav'
+  const filePath = join(process.cwd(), './uploads/' + file.filename);
   console.log('filePath', filePath);
-  const buffer = Buffer.from(fs.readFileSync(url));
+  const buffer = Buffer.from(fs.readFileSync(filePath));
 
   // Read .wav file and convert it to required format
   let wav = new wavefile.WaveFile(buffer);
@@ -51,9 +76,11 @@ router.get('/', async function(req, res, next) {
   let end = performance.now();
   console.log(`Execution duration: ${(end - start) / 1000} seconds`);
   console.log(output);
-// { text: ' And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.' }
+  res.status(200).json({
+    message: output
+  });
 
-  res.render('index', { title: 'Express' });
 });
+
 
 module.exports = router;
